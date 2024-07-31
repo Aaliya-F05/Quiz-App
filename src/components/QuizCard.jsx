@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "../styles/css/quizCard.scss";
 import { quiz } from "../services/QuestionBank";
 
-function QuizCard({ level, username, backHome }) {
+function QuizCard({ level, username, backHome, error, setError }) {
   let usersDatas = JSON.parse(localStorage.getItem("usersDatas")) || [];
   const [userAnswer, setUserAnswer] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -10,52 +10,58 @@ function QuizCard({ level, username, backHome }) {
   const [optionDisabled, setOptionDisabled] = useState(false);
   const [result, setResult] = useState({ score: 0, correct: 0, wrong: 0 });
   const [showScore, setShowScore] = useState(false);
-  const [wrong,setWrong] = useState(false);
+  const [wrong, setWrong] = useState(false);
+  const [nextBtn, setNextBtn] = useState(true);
 
   const formattedLevel = level.toLowerCase();
   const quizData = quiz.levels[formattedLevel];
   const { choices } = quizData.questions[currentQuestion];
 
-  useEffect(() => {
-    console.log(result);
-  }, [result]);
-
   const handleNext = () => {
-    if (currentQuestion < quizData.totalQuestions - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-      setSelectedAnswer(userAnswer[currentQuestion + 1]?.answerNo || "");
-      setOptionDisabled(false);
-      setWrong(false);
+    if (nextBtn) {
+      setError("Please select an answer to proceed to the next question.")
     }
     else {
-      setShowScore(true);
-      const userExists = usersDatas.findIndex((user) => user.userName === username);
-      if (userExists !== -1) {
-        if (usersDatas[userExists].score < result.score) {
-          usersDatas[userExists].score = result.score;
-        }
+      if (currentQuestion < quizData.totalQuestions - 1) {
+        setCurrentQuestion(currentQuestion + 1);
+        setSelectedAnswer(userAnswer[currentQuestion + 1]?.answerNo || "");
+        setOptionDisabled(false);
+        setWrong(false);
+        setNextBtn(true);
+        setError("");
       }
       else {
-        usersDatas.push({
-          userName: username,
-          score: result.score,
-        });
+        setShowScore(true);
+        const userExists = usersDatas.findIndex((user) => user.userName === username);
+        if (userExists !== -1) {
+          if (usersDatas[userExists].score < result.score) {
+            usersDatas[userExists].score = result.score;
+          }
+        }
+        else {
+          usersDatas.push({
+            userName: username,
+            score: result.score,
+          });
+        }
+        localStorage.setItem("usersDatas", JSON.stringify(usersDatas));
+        console.log(usersDatas)
       }
-      localStorage.setItem("usersDatas", JSON.stringify(usersDatas));
-      console.log(usersDatas)
     }
   };
 
   const handleAnswer = (answer) => {
     setSelectedAnswer(answer);
     setOptionDisabled(true);
+    setNextBtn(false);
+    setError("")
     const newUserAnswer = [...userAnswer];
     newUserAnswer[currentQuestion] = { questionNo: currentQuestion, answerNo: answer };
     setUserAnswer(newUserAnswer);
     if (answer === quizData.questions[currentQuestion].correctAnswer) {
       setResult((prev) => ({ ...prev, correct: prev.correct + 1, score: prev.score + quizData.perQuestionScore }));
     }
-    else{
+    else {
       setWrong(true);
     }
   };
@@ -90,7 +96,7 @@ function QuizCard({ level, username, backHome }) {
             <div className="card-header">
               <p className="quiz-number">
                 <span className="current-question">{String(currentQuestion + 1).padStart(2, 0)}</span>
-                &#47;{String(quizData.totalQuestions).padStart(2,0)}
+                &#47;{String(quizData.totalQuestions).padStart(2, 0)}
               </p>
               <p className="level-title">Level :<span> {level}</span></p>
             </div>
@@ -121,13 +127,20 @@ function QuizCard({ level, username, backHome }) {
                       : choice}
                   </li>
                 ))}
-                { wrong ? <p>Correct Answer : { quizData.questions[currentQuestion].correctAnswer}</p> : <></>}
+                {wrong ? <p> <span>Correct Answer</span> : {quizData.questions[currentQuestion].correctAnswer}</p> : <></>}
               </ul>
             </div>
             <div className="card-footer">
+              <button className="home-btn" onClick={backHome}>Exit</button>
               <button className="next-btn" onClick={handleNext}>Next</button>
             </div>
+            {error && (
+              <div className="error-message">
+                <h4>{error}</h4>
+              </div>
+            )}
           </div>
+
       }
     </div >
   );

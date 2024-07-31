@@ -1,17 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import QuizCard from "../components/QuizCard";
+import LeaderBoard from "../components/LeaderBoard";
 import "../pages/index.scss";
+import logo from "../assets/logo.svg"
+
 function Index() {
   const levels = ["Beginner", "Moderate", "Advanced"];
   const [isLevel, setIsLevel] = useState("");
   const [username, setUserName] = useState("");
   const [userEntered, setUserEntered] = useState(false);
   const [error, setError] = useState("");
-  const [leaderBoard,setLeaderBoard] = useState(false);
+  const [leaderBoard, setLeaderBoard] = useState(false);
+  const [leaderBoardClass, setLeaderBoardClass] = useState("");
+
   let usersDatas = (JSON.parse(localStorage.getItem("usersDatas")) || []).sort((a, b) => {
     return b.score - a.score;
   });
-
 
   const handleUser = () => {
     const userInput = document.getElementById("user").value;
@@ -19,89 +23,89 @@ function Index() {
       setUserName(userInput);
       setUserEntered(true);
     }
-  }
+  };
+  useEffect(()=>{
+    const handleReload = (e) =>{
+      e.preventDefault();
+      e.returnValue = "You have unsaved changes. Are you sure you want to exit?";
+    };
+    if(isLevel){
+      window.addEventListener("beforeunload",handleReload);
+    }
+    else{
+      window.removeEventListener("beforeunload",handleReload);
+    }
+  },[isLevel]);
 
   const backHome = () => {
     setIsLevel("");
-  }
-  const handleLeaderBoard = () =>{
-    setLeaderBoard(!leaderBoard);
-  }
+  };
+
+  const handleLeaderBoard = () => {
+    if (leaderBoard) {
+      setLeaderBoardClass("hide");
+      setTimeout(() => {
+        setLeaderBoard(false);
+        setLeaderBoardClass("");
+      }, 300);
+    } else {
+      setLeaderBoard(true);
+      setLeaderBoardClass("show");
+    }
+  };
+
   return (
     <>
+        <nav>
+          <img src={logo}></img>
+          <p> QuizQuest</p>
+        </nav>
       <div className="main-container">
-        {/* <div className="sub-container"> */}
-          {isLevel && userEntered ? (
-            <QuizCard level={isLevel} username={username} backHome={backHome} />
-          ) : (
-            <div className="sub-container">
-              <span>Enter Username </span>
-              <div className="user-content">
-                <input type="text" placeholder="Ex : JohnDoeBosko" id="user" ></input>
-                <button onClick={handleUser}>Enter</button>
-              </div>
-              {error ? <div className="error-message"><h4>{error}</h4></div> : ""}
-              <p>Select your level </p>
-              <div className="level-selector-container">
-                {levels.map((level, index) => {
-                  return (
-                    <button
-                      key={index}
-                      value={level}
-                      className="level-btn"
-                      onClick={() => {
-                        if (userEntered) {
-                          setIsLevel(level)
-                        }
-                        else {
-                          setError("Please enter username to proceed...");
-                        }
-                      }}
-                    >
-                      {level}
-                    </button>
-                  );
-                })}
-              </div>
-              { leaderBoard ? <div className={`leader-board ${leaderBoard ? "show" : "hide"}`  }>
-                <h2>Leader Board</h2>
-                {usersDatas.length == 0 ?
-                  <><h3 style={{ color: "#015055", fontWeight: 400, margin: "auto" }}>No Data Found</h3></>
-                  : <ul>
-                    {usersDatas.map((user, index) => (
-                      <li key={index}
-                        style={{
-                          backgroundColor: username === user.userName ? "#015055" : "#f4f8e6",
-                          color: username === user.userName ? "#f4f8e6" : "#015055"
-                        }}>
-                        <span className="hash">#
-                          <span className="score-rank"
-                            style={{
-                              backgroundColor: username === user.userName ? "#015055" : "#f4f8e6",
-                              color: username === user.userName ? "#f4f8e6" : "#015055", borderColor: username === user.userName ? "#f4f8e6" : "#015055"
-                            }}>
-                            {index + 1}
-                          </span>
-                          <span className="user"
-                            style={{
-                              backgroundColor: username === user.userName ? "#015055" : "#f4f8e6",
-                              color: username === user.userName ? "#f4f8e6" : "#015055"
-                            }}>{username === user.userName ? "You" : user.userName}</span>
-                        </span>
-                        {user.score} pts </li>
-                    ))}
-                  </ul>
-                }
-              </div> : ""}
+    
+        {isLevel && userEntered ? (
+          <QuizCard level={isLevel} username={username} backHome={backHome}  error={error} setError={setError}/>
+        ) : (
+          <div className="sub-container">
+            <span>Enter Username </span>
+            <div className="user-content">
+              <input type="text" placeholder="Ex : JohnDoeBosko" id="user" />
+              <button onClick={handleUser}>Enter</button>
             </div>
-          )}
-        {/* </div> */}
+            {error && <div className="error-message"><h4>{error}</h4></div>}
+            <p>Select your level </p>
+            <div className="level-selector-container">
+              {levels.map((level, index) => (
+                <button
+                  key={index}
+                  value={level}
+                  className="level-btn"
+                  onClick={() => {
+                    if (userEntered) {
+                      setIsLevel(level);
+                      setError("");
+                    } else {
+                      setError("Please enter username to proceed...");
+                    }
+                  }}
+                >
+                  {level}
+                </button>
+              ))}
+            </div>
+            {leaderBoard && (
+              <LeaderBoard
+                usersDatas={usersDatas}
+                username={username}
+                leaderBoardClass={leaderBoardClass}
+              />
+            )}
+            <button className="show-btn" onClick={handleLeaderBoard}>
+              {leaderBoard ? "Hide Leaderboard" : "Show Leaderboard"}
+            </button>
+          </div>
+        )}
       </div>
-      {isLevel && userEntered ?  <></> : <button className="show-btn" onClick={handleLeaderBoard}>
-        { leaderBoard ? "Hide Leaderboard" : "Show Leaderboard"}
-      </button>}
     </>
-
   );
 }
 

@@ -1,0 +1,32 @@
+:root {
+  --card_width: 700px;
+  --card_height: 540px;
+  --option_width: 250px;
+  --btn_width: 150px;
+
+  --primary_1: #015055;
+
+  --secondary_1: #e1f396;
+  --secondary_2: #a8af8a;
+  --secondary_3: #f4fadc;
+  --secondary_4: #eef8c1;
+
+  --standard_fontsize: 2rem;
+  --options_fontsize: 1.25rem;
+  --btn_fontsize: 1.15rem;
+}
+body {
+  font-family: Ubuntu, sans-serif;
+  margin: 0;
+  background-color: #bfccc5;
+}
+button {
+  font-family: inherit;
+}
+::-webkit-scrollbar{
+  display: none;
+}
+
+*{
+  margin: 0;
+}

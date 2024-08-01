@@ -7,5 +7,5 @@ This is a simple Quiz App built with React, HTML, and CSS, utilizing localStorag
 <b>Local Storage</b>: User data and high scores are stored in the browser's local storage.
 
 
-
+<br><br>
 [Live Here](https://aaliya-f05.github.io/Quiz-App/)

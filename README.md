@@ -1,8 +1,13 @@
-# React + Vite
+<h1>Quiz App</h1>
+This is a simple Quiz App built with React, HTML, and CSS, utilizing localStorage for data persistence. The app allows users to answer quiz questions and keeps track of their scores.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<h2>Features</h2>
+<ul>
+  <li><b>React</b>: The app is built using React for a dynamic and responsive user interface.</li>
+  <li><b>HTML & CSS</b>: Basic styling and structure are done using HTML and CSS.</li>
+  <li><b>Local Storage</b>: User data and high scores are stored in the browser's local storage.</li>
+</ul>
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+<br><br>
+[Live Here](https://aaliya-f05.github.io/Quiz-App/)

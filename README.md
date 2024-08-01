@@ -8,4 +8,4 @@ This is a simple Quiz App built with React, HTML, and CSS, utilizing localStorag
 
 
 
-Live Here : {https://aaliya-f05.github.io/Quiz-App/}
+[Live Here] : (https://aaliya-f05.github.io/Quiz-App/)
